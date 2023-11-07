@@ -11,11 +11,7 @@ jobs:
         image: postgres:11
         env:
           POSTGRES_PASSWORD: supersecret
-        options: &gt;-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     container:
       image: elixir:1.9-slim
