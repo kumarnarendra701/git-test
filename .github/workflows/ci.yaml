@@ -1,33 +1,33 @@
 name: CI / Automated testing
 on:
   push:
-    branches:
+    branches: main
 jobs:
-test:
-name: Unit & integration tests
-runs-on: ubuntu-latest
-services:
-  postgres:
-    image: postgres:11
-    env:
-      POSTGRES_PASSWORD: supersecret
-    options: &gt;-
-      --health-cmd pg_isready
-      --health-interval 10s
-      --health-timeout 5s
-      --health-retries 5
-
-container:
-  image: elixir:1.9-slim
-  env:
-    POSTGRES_HOSTNAME: postgres
-    POSTGRES_PASSWORD: supersecret
-    POSTGRES_PORT: 5432
-
-steps:
-  - name: Checkout code
-    uses: actions/checkout@master
-  - name: Install dependencies
-    run: mix do local.hex --force, local.rebar --force, deps.get
-  - name: Run tests
-    run: mix tes
+  test:
+    name: Unit & integration tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_PASSWORD: supersecret
+        options: &gt;-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    container:
+      image: elixir:1.9-slim
+      env:
+        POSTGRES_HOSTNAME: postgres
+        POSTGRES_PASSWORD: supersecret
+        POSTGRES_PORT: 5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Install dependencies
+        run: mix do local.hex --force, local.rebar --force, deps.get
+      - name: Run tests
+        run: mix tes
