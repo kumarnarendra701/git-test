@@ -17,7 +17,5 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.CI_PAT }}
       - name: run migrations
         run: docker run --network-alias=percona --entrypoint /bin/sh mysql -c "sleep 60 && mysql -hpercona -uroot -pci --execute="SET FOREIGN_KEY_CHECKS=0""
