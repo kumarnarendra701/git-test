@@ -1,6 +1,8 @@
 name: Test Migrations
 on:
   push:
+    branches:
+      - main
 
 jobs:
   Docker_build:
@@ -17,5 +19,9 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
-      - name: run migrations
-        run: docker run --network-alias=percona --entrypoint /bin/sh mysql -c "sleep 60 && mysql -hpercona -uroot -pci --execute="SET FOREIGN_KEY_CHECKS=0""
+      - name: Create Custom Network
+        run: docker network create my-network
+      - name: Build Migrations Docker Image
+        run: docker build -t sa-migrations:latest .
+      - name: Run Migrations
+        run: docker run --network my-network mysql /bin/sh -c "sleep 60 && mysql -hpercona -uroot -pci --execute='SET FOREIGN_KEY_CHECKS=0'"
