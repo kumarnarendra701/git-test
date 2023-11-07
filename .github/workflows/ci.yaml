@@ -8,14 +8,6 @@ jobs:
   Docker_build:
     name: Code checkout
     runs-on: ubuntu-latest
-    services:
-      percona:
-        image: percona:5.6
-        env:
-          MYSQL_ROOT_PASSWORD: ci
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
