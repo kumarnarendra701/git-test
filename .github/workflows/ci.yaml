@@ -13,9 +13,9 @@ jobs:
           MYSQL_ROOT_PASSWORD: ci
         ports: 
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name percona --hostname percona
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name percona --hostname percona --network percona
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
       - name: run migrations
-        run: docker run --network-alias=percona --entrypoint /bin/sh mysql -c "sleep 60 && mysql -hpercona -uroot -pci --execute="SET FOREIGN_KEY_CHECKS=0""
+        run: docker run --network percona --network-alias=percona --entrypoint /bin/sh mysql -c "sleep 60 && mysql -hpercona -uroot -pci --execute="SET FOREIGN_KEY_CHECKS=0""
