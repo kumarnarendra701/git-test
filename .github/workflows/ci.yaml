@@ -23,6 +23,5 @@ jobs:
         run: docker network create my-network
       - name: Run Migrations
         run: |
-          docker network create my-network
           docker run --name percona --network my-network -e MYSQL_ROOT_PASSWORD=ci -p 3306:3306 -d percona:5.6
           docker run --network my-network mysql /bin/sh -c "sleep 60 && mysql -hpercona -uroot -pci --execute='SET FOREIGN_KEY_CHECKS=0'"
