@@ -1,29 +1,32 @@
-name: CI / Automated testing
+name: Test Migrations
 on:
   push:
-    branches: main
+
 jobs:
-  test:
-    name: Unit & integration tests
-    runs-on: ubuntu-latest
+  Docker_build:
+    name: Code checkout
+    runs-on: ["self-hosted", "core-qa"]
     services:
-      postgres:
-        image: postgres:11
+      percona:
+        image: percona:5.6
         env:
-          POSTGRES_PASSWORD: supersecret
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    
-    container:
-      image: elixir:1.9-slim
-      env:
-        POSTGRES_HOSTNAME: postgres
-        POSTGRES_PASSWORD: supersecret
-        POSTGRES_PORT: 5432
-    
+          MYSQL_ROOT_PASSWORD: ci
+        ports: 
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name percona --hostname percona
     steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-      - name: Install dependencies
-        run: mix do local.hex --force, local.rebar --force, deps.get
-      - name: Run tests
-        run: mix tes
+      - name: Checkout Project
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CI_PAT }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: ECR login
+        uses: aws-actions/amazon-ecr-login@v1
+      -
+        name: run migrations
+        run: docker run --network-alias=percona --entrypoint /bin/sh mysql -c "sleep 60 && mysql -hpercona -uroot -pci --execute="SET FOREIGN_KEY_CHECKS=0""
