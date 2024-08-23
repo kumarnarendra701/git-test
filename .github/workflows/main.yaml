@@ -1,0 +1,46 @@
+name: Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      keys:
+        description: "Comma-separated list of keys to retrieve from config.yaml"
+        required: true
+        type: string
+
+jobs:
+  set-outputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install yq and jq
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Install yq and jq tools
+        run: |
+          pip install yq
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Read from config.yaml and set outputs
+        id: read-config
+        run: |
+          keys="${{ inputs.keys }}"
+          IFS=',' read -ra key_array <<< "$keys"
+
+          # Load all values from config.yaml into a single environment variable as JSON
+          config=$(yq eval -o=json '.' config.yaml)
+
+          for key in "${key_array[@]}"; do
+            # Use jq to extract the value for each key from the JSON-loaded config
+            value=$(echo "$config" | jq -r --arg k "$key" '.[$k]')
+
+            if [ "$value" != "null" ]; then
+              echo "${key}=${value}" >> $GITHUB_OUTPUT
+            else
+              echo "Key '$key' not found in config.yaml"
+            fi
+          done

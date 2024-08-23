@@ -1,0 +1,4 @@
+user: my_db_user
+password: my_db_password
+db_token: token
+api_token: api-token
