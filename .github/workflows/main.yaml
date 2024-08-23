@@ -16,11 +16,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install yq and jq
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      
-      - name: Install yq and jq tools
         run: |
           pip install yq
           sudo apt-get update && sudo apt-get install -y jq
@@ -32,7 +27,7 @@ jobs:
           IFS=',' read -ra key_array <<< "$keys"
 
           # Load all values from config.yaml into a single environment variable as JSON
-          config=$(yq eval -o=json '.' config.yaml)
+          config=$(yq eval -j '.' config.yaml)  # -j flag for JSON output in yq
 
           for key in "${key_array[@]}"; do
             # Use jq to extract the value for each key from the JSON-loaded config
