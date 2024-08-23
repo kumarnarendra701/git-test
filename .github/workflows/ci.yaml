@@ -15,6 +15,8 @@ jobs:
       - name: call compostire
         id: composite
         uses: ./.github/workflows/falcon
+      
       - name: display
+        shell: bash
         run: |
             ls -lrth
