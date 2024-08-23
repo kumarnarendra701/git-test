@@ -29,6 +29,9 @@ jobs:
             # Use yq to extract the value for each key directly
             value=$(yq eval ".${key}" config.yaml)
             
+            # Remove extra quotes that yq might add
+            value=$(echo "$value" | sed 's/^"\(.*\)"$/\1/')
+
             if [ -n "$value" ]; then
               echo "${key}=${value}" >> $GITHUB_ENV
             else
