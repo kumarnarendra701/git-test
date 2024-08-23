@@ -20,3 +20,9 @@ jobs:
         shell: bash
         run: |
             ls -lrth
+      - name: Display CI Token
+        shell: bash
+        run: |
+            CITOKEN=$(yq eval ".${CI_TOKEN}" config.yaml)
+            echo $CITOKEN
+      
