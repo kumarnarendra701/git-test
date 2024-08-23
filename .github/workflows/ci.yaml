@@ -6,11 +6,12 @@ on:
       - main
 
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: call compostire
-      id: composite
-      uses: ./.github/workflows/falcon
+  set-outputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: call compostire
+        id: composite
+        uses: ./.github/workflows/falcon
