@@ -1,20 +1,16 @@
 # .github/workflows/main-workflow.yml
 name: Main Workflow
-
 on:
   push:
     branches:
       - main
 
 jobs:
-  call-reusable-workflow:
-    uses: ./.github/workflows/main.yaml
-    with:
-      keys: "user"
-  use-outputs:
     runs-on: ubuntu-latest
-    needs: call-reusable-workflow
     steps:
-      - name: Use the outputs
-        run: |
-          echo "User: ${{ env.user }}"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: call compostire
+        id: composite
+        uses: ./.github/workflows/falcon
