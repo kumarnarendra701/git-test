@@ -26,10 +26,13 @@ jobs:
           IFS=',' read -ra key_array <<< "$keys"
 
           for key in "${key_array[@]}"; do
+            # Escape special characters in key to avoid issues with yq
+            escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$]/\\&/g')
+
             # Use yq to extract the value for each key directly
-            value=$(yq eval ".${key}" config.yaml)
-            
-            # Remove extra quotes that yq might add
+            value=$(yq eval ".${escaped_key}" config.yaml)
+
+            # Remove extra quotes if present
             value=$(echo "$value" | sed 's/^"\(.*\)"$/\1/')
 
             if [ -n "$value" ]; then
