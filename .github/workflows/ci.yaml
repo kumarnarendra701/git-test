@@ -29,5 +29,5 @@ jobs:
       - name: Fetch latest version of Falcon image
         id: falcon
         run: |
-            falcon_image_path=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) -t falcon-container -u $CI_TOKEN -s $CI_TOKEN --get-image-path)
+            falcon_image_path=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) -t falcon-container -u $CITOKEN -s $CITOKEN --get-image-path)
       
