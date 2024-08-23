@@ -24,6 +24,7 @@ jobs:
         shell: bash
         run: |
             CITOKEN=$(yq eval '.CI_TOKEN' config.yaml)
+            echo $CITOKEN
 
       # - name: Fetch latest version of Falcon image
       #   id: falcon
