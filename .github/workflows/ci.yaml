@@ -11,3 +11,9 @@ jobs:
     uses: ./.github/workflows/main.yaml
     with:
       keys: "user"
+    steps:
+      - name: Use the outputs
+        run: |
+          echo "User: ${{ env.user }}"
+          echo "DB Token: ${{ env.db_token }}"
+          echo "API Token: ${{ env.api_token }}"
