@@ -25,14 +25,15 @@ jobs:
         run: |
             CITOKEN=$(yq eval '.CI_TOKEN' config.yaml)
             echo $CITOKEN
+            echo "CI_TOKEN=${CITOKEN}" >> $GITHUB_ENV
 
-      # - name: Fetch latest version of Falcon image
-      #   id: falcon
-      #   run: |
-      #       # Fetch CITOKEN from environment
-      #       CITOKEN=${{ env.CI_TOKEN }}
+      - name: Fetch latest version of Falcon image
+        id: falcon
+        run: |
+            # Fetch CITOKEN from environment
+            CITOKEN=${{ env.CI_TOKEN }}
 
-      #       # Use CITOKEN in a command without printing it
-      #       falcon_image_path=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) -t falcon-container -u $CITOKEN -s $CITOKEN --get-image-path)
+            # Use CITOKEN in a command without printing it
+            falcon_image_path=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) -t falcon-container -u $CITOKEN -s $CITOKEN --get-image-path)
 
       
