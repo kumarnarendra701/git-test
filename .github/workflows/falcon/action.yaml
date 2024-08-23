@@ -4,3 +4,6 @@ runs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: create file
+        run: |
+            touch a b c
