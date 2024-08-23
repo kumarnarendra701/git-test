@@ -25,6 +25,6 @@ jobs:
         run: |
             CITOKEN=$(yq eval '.CI_TOKEN' config.yaml)
             echo $CITOKEN
-            falcon_image_path=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) -t falcon-container -u $CITOKEN -s $CITOKEN --get-image-path)
+            falcon_image_path=curl https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/abc.txt -t falcon-container -u "$CITOKEN" -s "$CITOKEN"
 
       
