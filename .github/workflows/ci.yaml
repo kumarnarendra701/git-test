@@ -11,10 +11,3 @@ jobs:
     uses: ./.github/workflows/main.yaml
     with:
       keys: "user"
-
-    steps:
-      - name: Use the outputs
-        run: |
-          echo "User: ${{ steps.read-config.outputs.user }}"
-          echo "DB Token: ${{ steps.read-config.outputs.db_token }}"
-          echo "API Token: ${{ steps.read-config.outputs.api_token }}"
