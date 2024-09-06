@@ -1,30 +1,36 @@
-# .github/workflows/main-workflow.yml
 name: Main Workflow
 on:
   push:
     branches:
       - main
-
 jobs:
-  set-outputs:
+  fetch-credentials:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: call compostire
-        id: composite
-        uses: ./.github/workflows/falcon
-      
-      - name: display
-        shell: bash
+      - name: Set hardcoded user and password
+        id: set-creds
         run: |
-            ls -lrth
-      - name: Display CI Token
-        shell: bash
-        run: |
-            CITOKEN=$(yq eval '.CI_TOKEN' config.yaml)
-            echo $CITOKEN
-            falcon_image_path=curl https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/abc.txt -t falcon-container -u "$CITOKEN" -s "$CITOKEN"
+          # Hardcode the user and password values
+          user="abc"
+          password="abc@123"
 
-      
+          # Mask the user and password in the logs
+          echo "::add-mask::$user"
+          echo "::add-mask::$password"
+
+          # Set environment variables for the next job
+          echo "USER=$user" >> $GITHUB_ENV
+          echo "PASSWORD=$password" >> $GITHUB_ENV
+
+  call-api:
+    needs: fetch-credentials
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display user and password
+        env:
+          USER: ${{ env.USER }}
+          PASSWORD: ${{ env.PASSWORD }}
+        run: |
+          # Display the user and password (masked in logs)
+          echo "User: $USER"
+          echo "Password: $PASSWORD"
