@@ -6,33 +6,18 @@ on:
       - main
 
 jobs:
-  fetch-credentials:
+  check-pr:
     runs-on: ubuntu-latest
     outputs:
-      user: ${{ steps.set-creds.outputs.user }}
-      password: ${{ steps.set-creds.outputs.password }}
+      pr-number: ${{ steps.check-prs.outputs.PR_NUMBER }}
     steps:
-      - name: Set hardcoded user and password
-        id: set-creds
+      - name: Check PRs
+        id: check-prs
         run: |
-          # Hardcode the user and password values
-          user="abc"
-          password="abc@123"
+          echo "PR_NUMBER="143" >> $GITHUB_OUTPUT
 
-          # Mask the user and password in the logs
-          echo "::add-mask::$user"
-          echo "::add-mask::$password"
-
-          # Write outputs to $GITHUB_OUTPUT
-          echo "user=$user" >> $GITHUB_OUTPUT
-          echo "password=$password" >> $GITHUB_OUTPUT
-
-  call-api:
-    needs: fetch-credentials
+  publish:
+    needs: [check-pr]
     runs-on: ubuntu-latest
-    steps:
-      - name: Display user and password
-        run: |
-          # Access user and password from the previous job
-          echo "User: ${{ needs.fetch-credentials.outputs.user }}"
-          echo "Password: ${{ needs.fetch-credentials.outputs.password }}"
+    env:
+      PR_NUMBER: ${{ needs.check-pr.outputs.pr-number }}
