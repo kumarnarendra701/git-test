@@ -17,9 +17,6 @@ jobs:
           # Hardcode the PR number
           PR_NUMBER=143
 
-          # Mask the PR_NUMBER in logs
-          echo "::add-mask::$PR_NUMBER"
-
           # Output the PR_NUMBER to be used by other jobs
           echo "pr-number=$PR_NUMBER" >> $GITHUB_ENV
 
