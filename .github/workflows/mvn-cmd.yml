@@ -1,25 +1,49 @@
-# .github/workflows/reusable-workflow.yml
-name: Reusable Workflow
+name: Dynamic Data Workflow
 
 on:
   workflow_call:
     inputs:
-      cluster_name:
+      inputs:
+        description: 'List of inputs in the format key:path'
         required: true
         type: string
-      app_name:
-        required: true
-        type: string
-    secrets:
-      # Define any secrets needed here
     outputs:
-      # Define any outputs needed here
+      outputs:
+        description: 'Comma-separated list of output keys and values'
+        required: true
+        type: string
 
 jobs:
-  execute:
+  process-data:
     runs-on: ubuntu-latest
+    outputs:
+      outputs: ${{ steps.set-outputs.outputs.outputs }}
+
     steps:
-      - name: Print Cluster and App Name
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install yq
         run: |
-          echo "Cluster Name: ${{ inputs.cluster_name }}"
-          echo "App Name: ${{ inputs.app_name }}"
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.16.2/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+      - name: Read YAML and set outputs
+        id: set-outputs
+        run: |
+          # Prepare the GITHUB_OUTPUT file
+          echo "" > $GITHUB_OUTPUT
+
+          # Read inputs and prepare outputs
+          IFS=',' read -r -a keys <<< "${{ inputs.inputs }}"
+          OUTPUTS=""
+
+          for key in "${keys[@]}"; do
+            IFS=':' read -r output_name yaml_path <<< "$key"
+            VALUE=$(yq eval "$yaml_path" config.yaml)
+            echo "$output_name=$VALUE" >> $GITHUB_OUTPUT
+            OUTPUTS+="$output_name,$VALUE;"
+          done
+
+          # Set final GitHub Actions outputs
+          echo "outputs=${OUTPUTS%?}" >> $GITHUB_OUTPUT  # Remove trailing semicolon
