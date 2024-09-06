@@ -5,9 +5,6 @@ on: [push, pull_request]
 jobs:
   example_job:
     runs-on: ubuntu-latest
-    outputs:
-      cluster_name: ${{ steps.yaml-output.outputs.cluster-name }}
-      app_name: ${{ steps.yaml-output.outputs.app-name }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
