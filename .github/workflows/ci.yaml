@@ -1,11 +1,16 @@
-name: Main Workflow
+name: Hardcoded Credentials Workflow
+
 on:
   push:
     branches:
       - main
+
 jobs:
   fetch-credentials:
     runs-on: ubuntu-latest
+    outputs:
+      user: ${{ steps.set-creds.outputs.user }}
+      password: ${{ steps.set-creds.outputs.password }}
     steps:
       - name: Set hardcoded user and password
         id: set-creds
@@ -18,19 +23,16 @@ jobs:
           echo "::add-mask::$user"
           echo "::add-mask::$password"
 
-          # Set environment variables for the next job
-          echo "USER=$user" >> $GITHUB_OUTPUT
-          echo "PASSWORD=$password" >> $GITHUB_OUTPUT
+          # Write outputs to $GITHUB_OUTPUT
+          echo "user=$user" >> $GITHUB_OUTPUT
+          echo "password=$password" >> $GITHUB_OUTPUT
 
   call-api:
     needs: fetch-credentials
     runs-on: ubuntu-latest
     steps:
       - name: Display user and password
-        env:
-          USER: ${{ env.USER }}
-          PASSWORD: ${{ env.PASSWORD }}
         run: |
-          # Display the user and password (masked in logs)
-          echo "User: $USER"
-          echo "Password: $PASSWORD"
+          # Access user and password from the previous job
+          echo "User: ${{ needs.fetch-credentials.outputs.user }}"
+          echo "Password: ${{ needs.fetch-credentials.outputs.password }}"
