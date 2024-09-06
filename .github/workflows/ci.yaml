@@ -16,7 +16,7 @@ jobs:
       id: yaml-output
       uses: christian-ci/action-yaml-github-output@v2
       with:
-        file_path: path/to/settings.yaml
+        file_path: config.yaml
         main_key: regions
         sub_key: us-west-1
 
