@@ -1,31 +1,25 @@
-name: Example Workflow
+name: Use Dynamic Data Workflow
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-  process-data:
+  dynamic-data:
+    uses: ./.github/workflows/mvn-cmd.yml
+    with:
+      inputs: 'app2_cluster_name:.app2.cluster-name,app2_app_name:.app2.app-name'  # Format: key:path
+
+  print-data:
+    needs: dynamic-data
     runs-on: ubuntu-latest
-    outputs:
-      outputs: ${{ steps.set-outputs.outputs.outputs }}
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        
-      - name: Read YAML and set outputs
-        id: set-outputs
+      - name: Print outputs
         run: |
-          # Prepare the GITHUB_OUTPUT file
-          echo "" > $GITHUB_OUTPUT
-
-          # Read inputs and prepare outputs
-          IFS=',' read -r -a keys <<< "${{ inputs.inputs }}"
-          OUTPUTS=""
-
-          for key in "${keys[@]}"; do
-            IFS=':' read -r output_name yaml_path <<< "$key"
-            VALUE=$(yq eval "$yaml_path" config.yaml)
-            echo "$output_name=$VALUE" >> $GITHUB_OUTPUT
-            OUTPUTS+="$output_name,$VALUE;"
+          IFS=';' read -r -a outputs <<< "${{ needs.dynamic-data.outputs.outputs }}"
+          for output in "${outputs[@]}"; do
+            IFS=',' read -r name value <<< "$output"
+            echo "$name: $value"
           done
-
-          # Set final GitHub Actions outputs
-          echo "outputs=${OUTPUTS%?}" >> $GITHUB_OUTPUT  # Remove trailing semicolon
