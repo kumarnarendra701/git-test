@@ -1,4 +1,9 @@
-db_user: abc
-db_pass: abc@123
-db_host: localhost
-db_port: 3306
+app-name: demo-app
+architecture: arm64
+regions:
+  us-west-1:
+    cluster-name: us-cluster
+    app-name: us-demo-app
+  eu-central-1:
+    cluster-name: eu-cluster
+    app-name: eu-demo-app
