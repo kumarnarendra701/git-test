@@ -17,14 +17,19 @@ jobs:
         main_key: regions
         sub_key: us-west-1
 
-  print_job:
-    runs-on: ubuntu-latest
-    needs: example_job
-    steps:
     - name: Print Variables
       run: |
-        echo "Cluster Name from Outputs: ${{ needs.example_job.outputs.cluster_name }}"
-        echo "App Name from Outputs: ${{ needs.example_job.outputs.app_name }}"
+        echo "Cluster Name: ${{ env.CLUSTER_NAME }}"
+        echo "App Name: ${{ env.APP_NAME }}"
+
+  # print_job:
+  #   runs-on: ubuntu-latest
+  #   needs: example_job
+  #   steps:
+  #   - name: Print Variables
+  #     run: |
+  #       echo "Cluster Name from Outputs: ${{ needs.example_job.outputs.cluster_name }}"
+  #       echo "App Name from Outputs: ${{ needs.example_job.outputs.app_name }}"
 
   # run_mvn:
   #   runs-on: ubuntu-latest
