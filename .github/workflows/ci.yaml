@@ -8,21 +8,24 @@ on:
 jobs:
   read-yaml:
     runs-on: ubuntu-latest
+    outputs:
+      db_user: ${{ steps.read_yaml.outputs.db_user }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Read YAML File
-        uses: pietrobolcato/action-read-yaml@1.0.0
         id: read_yaml
-        with:
-          config: config.yaml
-
-      - name: Use YAML Values
         run: |
-          echo DB User: ${{ steps.read_yaml.outputs['db_user'] }}
-          echo DB Pass: ${{ steps.read_yaml.outputs['db_pass'] }}
-          echo DB Host: ${{ steps.read_yaml.outputs['db_host'] }}
-          echo DB Port: ${{ steps.read_yaml.outputs['db_port'] }}
+          # Use yq to extract specific data from YAML
+          db_user=$(yq eval '.db_user' config.yaml)
+          echo "::set-output name=db_user::$db_user"
 
-  
+  use-data:
+    runs-on: ubuntu-latest
+    needs: read-yaml
+    steps:
+      - name: Use DB User
+        run: |
+          echo "DB User: ${{ needs.read-yaml.outputs.db_user }}"
+          # Use the DB user here
