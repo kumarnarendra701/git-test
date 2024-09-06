@@ -1,46 +1,31 @@
 name: Example Workflow
 
 on: [push, pull_request]
-
 jobs:
-  example_job:
+  process-data:
     runs-on: ubuntu-latest
+    outputs:
+      outputs: ${{ steps.set-outputs.outputs.outputs }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Read YAML and set outputs
+        id: set-outputs
+        run: |
+          # Prepare the GITHUB_OUTPUT file
+          echo "" > $GITHUB_OUTPUT
 
-    - name: Run YAML to Github Output Action
-      id: yaml-output
-      uses: christian-ci/action-yaml-github-output@v2
-      with:
-        file_path: config.yaml
-        main_key: regions
-        sub_key: us-west-1
+          # Read inputs and prepare outputs
+          IFS=',' read -r -a keys <<< "${{ inputs.inputs }}"
+          OUTPUTS=""
 
-  print_job:
-    runs-on: ubuntu-latest
-    needs: example_job
-    steps:
-    - name: Print Variables
-      run: |
-        echo "Cluster Name from Outputs: ${{ needs.example_job.outputs.cluster_name }}"
-        echo "App Name from Outputs: ${{ needs.example_job.outputs.app_name }}"
+          for key in "${keys[@]}"; do
+            IFS=':' read -r output_name yaml_path <<< "$key"
+            VALUE=$(yq eval "$yaml_path" config.yaml)
+            echo "$output_name=$VALUE" >> $GITHUB_OUTPUT
+            OUTPUTS+="$output_name,$VALUE;"
+          done
 
-  # print_job:
-  #   runs-on: ubuntu-latest
-  #   needs: example_job
-  #   steps:
-  #   - name: Print Variables
-  #     run: |
-  #       echo "Cluster Name from Outputs: ${{ needs.example_job.outputs.cluster_name }}"
-  #       echo "App Name from Outputs: ${{ needs.example_job.outputs.app_name }}"
-
-  # run_mvn:
-  #   runs-on: ubuntu-latest
-  #   needs: read_config_file
-  #   steps:
-  #   - name: Call Reusable Workflow
-  #     uses: ./.github/workflows/mvn-cmd.yml
-  #     with:
-  #       cluster_name: ${{ needs.read_config_file.outputs.cluster_name }}
-  #       app_name: ${{ needs.read_config_file.outputs.app_name }}
+          # Set final GitHub Actions outputs
+          echo "outputs=${OUTPUTS%?}" >> $GITHUB_OUTPUT  # Remove trailing semicolon
