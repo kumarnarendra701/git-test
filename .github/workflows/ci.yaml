@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   check-pr:
     runs-on: ubuntu-latest
@@ -21,3 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PR_NUMBER: ${{ needs.check-pr.outputs.pr-number }}
+    steps:
+      - name: Check PRs
+        id: check-prs
+        run: |
+           echo "PR: $PR_NUMBER"
