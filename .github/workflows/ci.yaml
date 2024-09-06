@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   check-pr:
     runs-on: ubuntu-latest
@@ -13,7 +14,14 @@ jobs:
       - name: Check PRs
         id: check-prs
         run: |
-          echo "PR_NUMBER=143" >> $GITHUB_OUTPUT
+          # Set the PR number
+          PR_NUMBER=143
+
+          # Mask the PR_NUMBER so it doesn't appear in logs
+          echo "::add-mask::$PR_NUMBER"
+
+          # Write PR_NUMBER to $GITHUB_OUTPUT
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
 
   publish:
     needs: [check-pr]
@@ -21,7 +29,7 @@ jobs:
     env:
       PR_NUMBER: ${{ needs.check-pr.outputs.pr-number }}
     steps:
-      - name: Check PRs
-        id: check-prs
+      - name: Display PR number
         run: |
+           # This will display the masked PR number
            echo "PR: $PR_NUMBER"
