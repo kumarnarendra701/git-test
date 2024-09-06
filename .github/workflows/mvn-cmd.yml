@@ -23,22 +23,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
-      - name: Read YAML and set outputs
-        id: set-outputs
-        run: |
-          # Prepare the GITHUB_OUTPUT file
-          echo "" > $GITHUB_OUTPUT
+      # - name: Read YAML and set outputs
+      #   id: set-outputs
+      #   run: |
+      #     # Prepare the GITHUB_OUTPUT file
+      #     echo "" > $GITHUB_OUTPUT
 
-          # Read inputs and prepare outputs
-          IFS=',' read -r -a keys <<< "${{ inputs.inputs }}"
-          OUTPUTS=""
+      #     # Read inputs and prepare outputs
+      #     IFS=',' read -r -a keys <<< "${{ inputs.inputs }}"
+      #     OUTPUTS=""
 
-          for key in "${keys[@]}"; do
-            IFS=':' read -r output_name yaml_path <<< "$key"
-            VALUE=$(yq eval "$yaml_path" config.yaml)
-            echo "$output_name=$VALUE" >> $GITHUB_OUTPUT
-            OUTPUTS+="$output_name,$VALUE;"
-          done
+      #     for key in "${keys[@]}"; do
+      #       IFS=':' read -r output_name yaml_path <<< "$key"
+      #       VALUE=$(yq eval "$yaml_path" config.yaml)
+      #       echo "$output_name=$VALUE" >> $GITHUB_OUTPUT
+      #       OUTPUTS+="$output_name,$VALUE;"
+      #     done
 
-          # Set final GitHub Actions outputs
-          echo "outputs=${OUTPUTS%?}" >> $GITHUB_OUTPUT  # Remove trailing semicolon
+      #     # Set final GitHub Actions outputs
+      #     echo "outputs=${OUTPUTS%?}" >> $GITHUB_OUTPUT  # Remove trailing semicolon
