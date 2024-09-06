@@ -6,10 +6,13 @@ on:
       - main
 
 jobs:
-  dynamic-data:
-    uses: ./.github/workflows/mvn-cmd.yml
-    with:
-      inputs: 'app2_cluster_name:.app2.cluster-name,app2_app_name:.app2.app-name'  # Format: key:path
+  run_mvn:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Call Reusable Workflow
+      uses: ./.github/workflows/mvn-cmd.yml
+      with:
+        inputs: 'app2_cluster_name:.app2.cluster-name,app2_app_name:.app2.app-name' 
 
   # print-data:
   #   needs: dynamic-data
