@@ -19,8 +19,8 @@ jobs:
           echo "::add-mask::$password"
 
           # Set environment variables for the next job
-          echo "USER=$user" >> $GITHUB_ENV
-          echo "PASSWORD=$password" >> $GITHUB_ENV
+          echo "USER=$user" >> $GITHUB_OUTPUT
+          echo "PASSWORD=$password" >> $GITHUB_OUTPUT
 
   call-api:
     needs: fetch-credentials
