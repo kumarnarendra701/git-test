@@ -9,27 +9,27 @@ jobs:
   check-pr:
     runs-on: ubuntu-latest
     outputs:
-      pr-number: ${{ steps.check-prs.outputs.PR_NUMBER }}
+      pr-number: ${{ steps.check-prs.outputs.pr-number }}
     steps:
       - name: Check PRs
         id: check-prs
         run: |
-          # Set the PR number
+          # Hardcode the PR number
           PR_NUMBER=143
 
-          # Mask the PR_NUMBER so it doesn't appear in logs
+          # Mask the PR_NUMBER in logs
           echo "::add-mask::$PR_NUMBER"
 
-          # Write PR_NUMBER to $GITHUB_OUTPUT
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+          # Output the PR_NUMBER to be used by other jobs
+          echo "pr-number=$PR_NUMBER" >> $GITHUB_ENV
 
   publish:
     needs: [check-pr]
     runs-on: ubuntu-latest
-    env:
-      PR_NUMBER: ${{ needs.check-pr.outputs.pr-number }}
     steps:
       - name: Display PR number
+        env:
+          PR_NUMBER: ${{ env.pr-number }}
         run: |
            # This will display the masked PR number
            echo "PR: $PR_NUMBER"
