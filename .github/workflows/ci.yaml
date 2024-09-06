@@ -11,15 +11,14 @@ jobs:
     with:
       inputs: 'app2_cluster_name:.app2.cluster-name,app2_app_name:.app2.app-name'  # Format: key:path
 
-  print-data:
-    needs: dynamic-data
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Print outputs
-        run: |
-          IFS=';' read -r -a outputs <<< "${{ needs.dynamic-data.outputs.outputs }}"
-          for output in "${outputs[@]}"; do
-            IFS=',' read -r name value <<< "$output"
-            echo "$name: $value"
-          done
+  # print-data:
+  #   needs: dynamic-data
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Print outputs
+  #       run: |
+  #         IFS=';' read -r -a outputs <<< "${{ needs.dynamic-data.outputs.outputs }}"
+  #         for output in "${outputs[@]}"; do
+  #           IFS=',' read -r name value <<< "$output"
+  #           echo "$name: $value"
+  #         done
