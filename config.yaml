@@ -1,5 +1,4 @@
-user: my_db_user
-password: my_db_password
-db_token: token
-api_token: api-token
-CI_TOKEN: ABCDEEEFFFFF
+db_user: abc
+db_pass: abc@123
+db_host: localhost
+db_port: 3306
