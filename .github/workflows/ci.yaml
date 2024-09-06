@@ -6,45 +6,23 @@ on:
       - main
 
 jobs:
-  setup:
+  read-yaml:
     runs-on: ubuntu-latest
-    outputs:
-      db_user: ${{ steps.set-outputs.outputs.db_user }}
-      db_pass: ${{ steps.set-outputs.outputs.db_pass }}
-      db_host: ${{ steps.set-outputs.outputs.db_host }}
-      db_port: ${{ steps.set-outputs.outputs.db_port }}
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Read config.yaml and set outputs
-        id: set-outputs
-        run: |
-          # Read values from config.yaml
-          db_user=$(yq eval '.db_user' config.yaml)
-          db_pass=$(yq eval '.db_pass' config.yaml)
-          db_host=$(yq eval '.db_host' config.yaml)
-          db_port=$(yq eval '.db_port' config.yaml)
+      - name: Read YAML File
+        uses: pietrobolcato/action-read-yaml@1.0.0
+        id: read_yaml
+        with:
+          config: ${{ github.workspace }}/examples/config.yaml
 
-          # Output the values
-          echo "db_user=$db_user" >> $GITHUB_OUTPUT
-          echo "db_pass=$db_pass" >> $GITHUB_OUTPUT
-          echo "db_host=$db_host" >> $GITHUB_OUTPUT
-          echo "db_port=$db_port" >> $GITHUB_OUTPUT
-
-  publish:
-    needs: [setup]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Display Config Values
-        env:
-          DB_USER: ${{ needs.setup.outputs.db_user }}
-          DB_PASS: ${{ needs.setup.outputs.db_pass }}
-          DB_HOST: ${{ needs.setup.outputs.db_host }}
-          DB_PORT: ${{ needs.setup.outputs.db_port }}
+      - name: Use YAML Values
         run: |
-          # This will display the config values
-          echo "DB_USER: $DB_USER"
-          echo "DB_PASS: $DB_PASS"
-          echo "DB_HOST: $DB_HOST"
-          echo "DB_PORT: $DB_PORT"
+          echo DB User: ${{ steps.read_yaml.outputs['db_user'] }}
+          echo DB Pass: ${{ steps.read_yaml.outputs['db_pass'] }}
+          echo DB Host: ${{ steps.read_yaml.outputs['db_host'] }}
+          echo DB Port: ${{ steps.read_yaml.outputs['db_port'] }}
+
+  
