@@ -20,7 +20,8 @@ jobs:
 
     - name: Print Variables
       run: |
-        echo "Cluster Name: ${{ env.cluster_name }}"
-        echo "Cluster Name: ${{ env.CLUSTER_NAME }}"
-        echo "App Name: ${{ env.app_name }}"
-        echo "App Name: ${{ env.APP_NAME }}"
+        echo "Cluster Name small : ${{ env.cluster_name }}"
+        echo "Cluster Name caps : ${{ env.CLUSTER_NAME }}"
+         echo "DB NAME caps : ${{ env.DB_NAME }}"
+        echo "App Name small {{ env.app_name }}"
+        echo "DB Name small : ${{ env.db_name }}"
