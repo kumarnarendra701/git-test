@@ -16,6 +16,7 @@ jobs:
         file_path: config.yaml
         main_key: regions
         sub_key: us-west-1
+        name-transformation: none
 
     - name: Print Variables
       run: |
