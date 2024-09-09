@@ -19,5 +19,5 @@ jobs:
 
     - name: Print Variables
       run: |
-        echo "Cluster Name: ${{ env.cluster_name }}"
-        echo "App Name: ${{ env.app_name }}"
+        echo "Cluster Name: ${{ env.CLUSTER_NAME }}"
+        echo "App Name: ${{ env.APP_NAME }}"
