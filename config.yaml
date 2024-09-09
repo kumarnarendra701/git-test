@@ -4,6 +4,8 @@ regions:
   us-west-1:
     cluster-name: us-cluster
     app-name: us-demo-app
+    db_name: root
   eu-central-1:
     cluster-name: eu-cluster
     app-name: eu-demo-app
+    db_name: root
