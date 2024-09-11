@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/376fa532-8c2a-482e-bc77-e128bbb790f3)
 # Manual Process for Updating Kubernetes Secrets for SSL Certificates
 
 This document provides an alternative method to update SSL certificates in Kubernetes in case the GitHub SSL renewal workflow fails. Follow the steps below to manually update certificates in the Kubernetes cluster.
@@ -27,7 +26,12 @@ This document provides an alternative method to update SSL certificates in Kuber
 
    ![image](https://github.com/user-attachments/assets/32e7de2a-abaa-47a9-9f40-e4ac14459bbe)
 
-   
+
+
+4. **Check the TLS Certificate in Ingress/ConfigMap**
+   - Navigate to the **Ingress** resource and inspect the certificate reference under the `tls` section.
+   - Note the `secretName`, which corresponds to the secret holding the certificate.
+
    ```yaml
       spec:
         tls:
@@ -39,17 +43,12 @@ This document provides an alternative method to update SSL certificates in Kuber
             secretName: wavi.ng
    ```
 
-4. **Check the TLS Certificate in Ingress/ConfigMap**
-   - Navigate to the **Ingress** resource and inspect the certificate reference under the `tls` section.
-   - Note the `secretName`, which corresponds to the secret holding the certificate.
-
-   ```bash
-   kubectl get ingress <ingress-name> -n <namespace> -o yaml | grep tls
-   ```
-
 5. **Access the Corresponding Secret**
    - Once you have identified the **secretName**, locate it in the Kubernetes cluster:
+   Lens:
+   ![image](https://github.com/user-attachments/assets/1ae9015d-d51d-4349-ade8-e0b802c5abb5)
 
+   From CLI:
    ```bash
    kubectl get secret tls-cert-secret -n <namespace>
    ```
@@ -65,6 +64,7 @@ This document provides an alternative method to update SSL certificates in Kuber
    Lens:
       ![image](https://github.com/user-attachments/assets/db517305-d73e-4921-98ba-5cc326ca68fe)
 
+   From CLI:
 
    ```bash
    kubectl delete secret tls-cert-secret -n <namespace>
@@ -73,7 +73,7 @@ This document provides an alternative method to update SSL certificates in Kuber
 
 9. **Restart the Deployment (if necessary)**
    - If the certificate is used in a **Deployment**, restart the associated pods to apply the new certificate:
-
+   From CLI:
    ```bash
    kubectl rollout restart deployment <deployment-name> -n <namespace>
    ```
