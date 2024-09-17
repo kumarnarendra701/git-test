@@ -1,25 +1,40 @@
-name: Use Dynamic Data Workflow
+name: Use Dynamic Data Workflow with Cache
 
 on:
   push:
     branches:
       - main
+
 jobs:
   create_file:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: List
-        run: ls -la $RUNNER_TEMP/
-      - name: Create
-        run: echo "Hello DevOps" >> $RUNNER_TEMP/myfile.txt
-      - name: List
-        run: ls -la $RUNNER_TEMP/
+      
+      - name: Create file
+        run: |
+          echo "Hello DevOps" > $RUNNER_TEMP/myfile.txt
+
+      - name: Cache the file
+        uses: actions/cache@v3
+        with:
+          path: $RUNNER_TEMP/myfile.txt
+          key: ${{ runner.os }}-myfile-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-myfile-
 
   list_file:
     runs-on: ubuntu-latest
     needs: create_file
-    steps:  
-      - name: List
+    steps:
+      - name: Restore file from cache
+        uses: actions/cache@v3
+        with:
+          path: $RUNNER_TEMP/myfile.txt
+          key: ${{ runner.os }}-myfile-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-myfile-
+
+      - name: List file
         run: ls -la $RUNNER_TEMP/
