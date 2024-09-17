@@ -4,24 +4,24 @@ on:
   push:
     branches:
       - main
-
 jobs:
-  run_mvn:
+  create_file:
     runs-on: ubuntu-latest
     steps:
-    - name: Call Reusable Workflow
-      uses: ./.github/workflows/mvn-cmd.yml
-      with:
-        inputs: 'app2_cluster_name:.app2.cluster-name,app2_app_name:.app2.app-name' 
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  # print-data:
-  #   needs: dynamic-data
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Print outputs
-  #       run: |
-  #         IFS=';' read -r -a outputs <<< "${{ needs.dynamic-data.outputs.outputs }}"
-  #         for output in "${outputs[@]}"; do
-  #           IFS=',' read -r name value <<< "$output"
-  #           echo "$name: $value"
-  #         done
+      - name: Zip files from another repo
+        run: echo "Hello DevOps" >> $RUNNER_TEMP/myfile.txt
+
+  list_file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: list file
+        run: ls -la $RUNNER_TEMP/myfile.txt
+     
+      - name: cat  file
+        run: cat $RUNNER_TEMP/myfile.txt
