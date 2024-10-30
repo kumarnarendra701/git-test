@@ -1,5 +1,4 @@
 name: Restart service
-
 on:
   workflow_dispatch:
     inputs:
