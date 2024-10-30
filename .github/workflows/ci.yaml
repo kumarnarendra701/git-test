@@ -1,40 +1,83 @@
-name: Use Dynamic Data Workflow with Cache
+name: Restart service
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      env:
+        description: "Select the environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+          - e2e
+          - uat
+          - qa
+      namespace:
+        description: "Enter the namespace"
+        required: true
+        type: string
+      deployment_name:
+        description: "Enter the deployment name"
+        required: true
+        type: string
+
+env:
+  ENV_CONFIG: |
+    {
+      "dev": {
+        "CLUSTER_NAME": "ge4-bos-cn-dv",
+        "CLUSTER_LOCATION": "us-east4",
+        "GCP_PROJECT": "app-bos-cn-dv-5gu9",
+        "GCP_PROJECT_NUMBER": "644y5485895",
+        "POOL_NAME": "app-bos-dv-wi-pool-01",
+        "PROVIDER_NAME": "app-bos-dv-wi-github-provider"
+      },
+      "prod": {
+        "CLUSTER_NAME": "ge4-bos-cn-pr",
+        "CLUSTER_LOCATION": "us-east1",
+        "GCP_PROJECT": "app-bos-cn-pr-7gu9",
+        "GCP_PROJECT_NUMBER": "633x4374772",
+        "POOL_NAME": "app-bos-pr-wi-pool-01",
+        "PROVIDER_NAME": "app-bos-pr-wi-github-provider"
+      },
+      "e2e": {
+        "CLUSTER_NAME": "ge4-bos-cn-e2e",
+        "CLUSTER_LOCATION": "us-east3",
+        "GCP_PROJECT": "app-bos-cn-e2e-3gu9",
+        "GCP_PROJECT_NUMBER": "622z3263669",
+        "POOL_NAME": "app-bos-e2e-wi-pool-01",
+        "PROVIDER_NAME": "app-bos-e2e-wi-github-provider"
+      },
+      "uat": {
+        "CLUSTER_NAME": "ge4-bos-cn-uat",
+        "CLUSTER_LOCATION": "us-east2",
+        "GCP_PROJECT": "app-bos-cn-uat-4gu9",
+        "GCP_PROJECT_NUMBER": "611w2152556",
+        "POOL_NAME": "app-bos-uat-wi-pool-01",
+        "PROVIDER_NAME": "app-bos-uat-wi-github-provider"
+      },
+      "qa": {
+        "CLUSTER_NAME": "ge4-bos-cn-qa",
+        "CLUSTER_LOCATION": "us-east5",
+        "GCP_PROJECT": "app-bos-cn-qa-8gu9",
+        "GCP_PROJECT_NUMBER": "655y5487895",
+        "POOL_NAME": "app-bos-qa-wi-pool-01",
+        "PROVIDER_NAME": "app-bos-qa-wi-github-provider"
+      }
+    }
 
 jobs:
-  create_file:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      
-      - name: Create file
-        run: |
-          echo "Hello DevOps" > $RUNNER_TEMP/myfile.txt
-
-      - name: Cache the file
-        uses: actions/cache@v3
-        with:
-          path: $RUNNER_TEMP/myfile.txt
-          key: ${{ runner.os }}-myfile-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-myfile-
-
-  list_file:
-    runs-on: ubuntu-latest
-    needs: create_file
-    steps:
-      - name: Restore file from cache
-        uses: actions/cache@v3
-        with:
-          path: $RUNNER_TEMP/myfile.txt
-          key: ${{ runner.os }}-myfile-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-myfile-
-
-      - name: List file
-        run: ls -la $RUNNER_TEMP/
+  pipeline:
+    name: Restart service in ${{ github.event.inputs.env }} environment
+    uses: brtspd/tool-jva-java-shared-pipeline/.github/workflows/cnative-restart-dev.yml@develop-bos-digital
+    secrets: inherit
+    with:
+      DEPLOYMENT_NAME: ${{ github.event.inputs.deployment_name }}
+      NAMESPACE: ${{ github.event.inputs.namespace }}
+      CLUSTER_NAME: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].CLUSTER_NAME }}
+      CLUSTER_LOCATION: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].CLUSTER_LOCATION }}
+      GCP_PROJECT: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].GCP_PROJECT }}
+      GCP_PROJECT_NUMBER: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].GCP_PROJECT_NUMBER }}
+      POOL_NAME: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].POOL_NAME }}
+      PROVIDER_NAME: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].PROVIDER_NAME }}
