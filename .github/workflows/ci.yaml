@@ -22,7 +22,7 @@ on:
         type: string
 
 jobs:
-  pipeline:
+  restart-service:
     name: Restart service in ${{ github.event.inputs.env }} environment
     uses: brtspd/tool-jva-java-shared-pipeline/.github/workflows/cnative-restart-dev.yml@develop-bos-digital
     secrets: inherit
