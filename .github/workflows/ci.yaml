@@ -1,10 +1,10 @@
-name: Restart service
+name: Restart Service
 
 on:
   workflow_dispatch:
     inputs:
-      env:
-        description: "Select the environment"
+      environment:
+        description: 'Select the environment (dev, prod, e2e, uat)'
         required: true
         type: choice
         options:
@@ -12,27 +12,40 @@ on:
           - prod
           - e2e
           - uat
-          - qa  # Added QA environment
       namespace:
-        description: "Enter the namespace"
+        description: 'Enter the namespace'
         required: true
         type: string
       deployment_name:
-        description: "Enter the deployment name"
+        description: 'Enter the deployment name'
         required: true
         type: string
 
 jobs:
-  pipeline:
-    name: Restart service in ${{ github.event.inputs.env }} environment
-    uses: brtspd/tool-jva-java-shared-pipeline/.github/workflows/cnative-restart-dev.yml@develop-bos-digital
-    secrets: inherit
-    with:
-      DEPLOYMENT_NAME: ${{ github.event.inputs.deployment_name }}
-      NAMESPACE: ${{ github.event.inputs.namespace }}
-      CLUSTER_LOCATION: "us-east4"  # Static value for all environments
-      CLUSTER_NAME: ${{ fromJson('{"dev": "ge4-bos-cn-dv", "prod": "ge4-bos-cn-pr", "e2e": "ge4-bos-cn-e2e", "uat": "ge4-bos-cn-uat", "qa": "ge4-bos-cn-qa"}')[github.event.inputs.env] }}
-      GCP_PROJECT: ${{ fromJson('{"dev": "app-bos-cn-dv-5gu9", "prod": "app-bos-cn-pr-7gu9", "e2e": "app-bos-cn-e2e-3gu9", "uat": "app-bos-cn-uat-4gu9", "qa": "app-bos-cn-qa-6gu9"}')[github.event.inputs.env] }}
-      GCP_PROJECT_NUMBER: ${{ fromJson('{"dev": "644y5485895", "prod": "633x4374772", "e2e": "622z3263669", "uat": "611w2152556", "qa": "555x1234567"}')[github.event.inputs.env] }}
-      POOL_NAME: ${{ fromJson('{"dev": "app-bos-dv-wi-pool-01", "prod": "app-bos-pr-wi-pool-01", "e2e": "app-bos-e2e-wi-pool-01", "uat": "app-bos-uat-wi-pool-01", "qa": "app-bos-qa-wi-pool-01"}')[github.event.inputs.env] }}
-      PROVIDER_NAME: ${{ fromJson('{"dev": "app-bos-dv-wi-github-provider", "prod": "app-bos-pr-wi-github-provider", "e2e": "app-bos-e2e-wi-github-provider", "uat": "app-bos-uat-wi-github-provider", "qa": "app-bos-qa-wi-github-provider"}')[github.event.inputs.env] }}
+  restart-service:
+    runs-on: ubuntu-latest
+    needs: Deploy_Cert
+    steps:
+      - uses: ./.github/workflows/cnative-restart-dev.yml@develop-bos-digital
+        with:
+          DEPLOYMENT_NAME: ${{ github.event.inputs.deployment_name }}
+          NAMESPACE: ${{ github.event.inputs.namespace }}
+          # Use a map to define environment-specific values
+          ENVIRONMENT_CONFIG: |
+            {
+              "dev": {
+                "cluster_name": "ge4-bos-cn-dv",
+                "cluster_location": "us-east4",
+                "gcp_project": "app-bos-cn-dv-5gu9",
+                "gcp_project_number": "644y5485895",
+                "pool_name": "app-bos-dv-wi-pool-01",
+                "provider_name": "app-bos-dv-wi-github-provider"
+              },
+            }
+          # Access environment-specific values using JMESPath expression
+          CLUSTER_NAME: ${{ fromJson(steps.parse-inputs.outputs.environment_config).$(github.event.inputs.environment).cluster_name }}
+          CLUSTER_LOCATION: ${{ fromJson(steps.parse-inputs.outputs.environment_config).$(github.event.inputs.environment).cluster_location }}
+          GCP_PROJECT: ${{ fromJson(steps.parse-inputs.outputs.environment_config).$(github.event.inputs.environment).gcp_project }}
+          GCP_PROJECT_NUMBER: ${{ fromJson(steps.parse-inputs.outputs.environment_config).$(github.event.inputs.environment).gcp_project_number }}
+          POOL_NAME: ${{ fromJson(steps.parse-inputs.outputs.environment_config).$(github.event.inputs.environment).pool_name }}
+          PROVIDER_NAME: ${{ fromJson(steps.parse-inputs.outputs.environment_config).$(github.event.inputs.environment).provider_name }}
