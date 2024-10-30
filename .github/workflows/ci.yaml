@@ -12,7 +12,6 @@ on:
           - prod
           - e2e
           - uat
-          - qa
       namespace:
         description: "Enter the namespace"
         required: true
@@ -22,51 +21,6 @@ on:
         required: true
         type: string
 
-env:
-  ENV_CONFIG: |
-    {
-      "dev": {
-        "CLUSTER_NAME": "ge4-bos-cn-dv",
-        "CLUSTER_LOCATION": "us-east4",
-        "GCP_PROJECT": "app-bos-cn-dv-5gu9",
-        "GCP_PROJECT_NUMBER": "644y5485895",
-        "POOL_NAME": "app-bos-dv-wi-pool-01",
-        "PROVIDER_NAME": "app-bos-dv-wi-github-provider"
-      },
-      "prod": {
-        "CLUSTER_NAME": "ge4-bos-cn-pr",
-        "CLUSTER_LOCATION": "us-east1",
-        "GCP_PROJECT": "app-bos-cn-pr-7gu9",
-        "GCP_PROJECT_NUMBER": "633x4374772",
-        "POOL_NAME": "app-bos-pr-wi-pool-01",
-        "PROVIDER_NAME": "app-bos-pr-wi-github-provider"
-      },
-      "e2e": {
-        "CLUSTER_NAME": "ge4-bos-cn-e2e",
-        "CLUSTER_LOCATION": "us-east3",
-        "GCP_PROJECT": "app-bos-cn-e2e-3gu9",
-        "GCP_PROJECT_NUMBER": "622z3263669",
-        "POOL_NAME": "app-bos-e2e-wi-pool-01",
-        "PROVIDER_NAME": "app-bos-e2e-wi-github-provider"
-      },
-      "uat": {
-        "CLUSTER_NAME": "ge4-bos-cn-uat",
-        "CLUSTER_LOCATION": "us-east2",
-        "GCP_PROJECT": "app-bos-cn-uat-4gu9",
-        "GCP_PROJECT_NUMBER": "611w2152556",
-        "POOL_NAME": "app-bos-uat-wi-pool-01",
-        "PROVIDER_NAME": "app-bos-uat-wi-github-provider"
-      },
-      "qa": {
-        "CLUSTER_NAME": "ge4-bos-cn-qa",
-        "CLUSTER_LOCATION": "us-east5",
-        "GCP_PROJECT": "app-bos-cn-qa-8gu9",
-        "GCP_PROJECT_NUMBER": "655y5487895",
-        "POOL_NAME": "app-bos-qa-wi-pool-01",
-        "PROVIDER_NAME": "app-bos-qa-wi-github-provider"
-      }
-    }
-
 jobs:
   pipeline:
     name: Restart service in ${{ github.event.inputs.env }} environment
@@ -75,9 +29,9 @@ jobs:
     with:
       DEPLOYMENT_NAME: ${{ github.event.inputs.deployment_name }}
       NAMESPACE: ${{ github.event.inputs.namespace }}
-      CLUSTER_NAME: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].CLUSTER_NAME }}
-      CLUSTER_LOCATION: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].CLUSTER_LOCATION }}
-      GCP_PROJECT: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].GCP_PROJECT }}
-      GCP_PROJECT_NUMBER: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].GCP_PROJECT_NUMBER }}
-      POOL_NAME: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].POOL_NAME }}
-      PROVIDER_NAME: ${{ fromJson(env.ENV_CONFIG)[github.event.inputs.env].PROVIDER_NAME }}
+      CLUSTER_LOCATION: "us-east4"  # Static value for all environments
+      CLUSTER_NAME: ${{ fromJson('{"dev": "ge4-bos-cn-dv", "prod": "ge4-bos-cn-pr", "e2e": "ge4-bos-cn-e2e", "uat": "ge4-bos-cn-uat"}')[github.event.inputs.env] }}
+      GCP_PROJECT: ${{ fromJson('{"dev": "app-bos-cn-dv-5gu9", "prod": "app-bos-cn-pr-7gu9", "e2e": "app-bos-cn-e2e-3gu9", "uat": "app-bos-cn-uat-4gu9"}')[github.event.inputs.env] }}
+      GCP_PROJECT_NUMBER: ${{ fromJson('{"dev": "644y5485895", "prod": "633x4374772", "e2e": "622z3263669", "uat": "611w2152556"}')[github.event.inputs.env] }}
+      POOL_NAME: ${{ fromJson('{"dev": "app-bos-dv-wi-pool-01", "prod": "app-bos-pr-wi-pool-01", "e2e": "app-bos-e2e-wi-pool-01", "uat": "app-bos-uat-wi-pool-01"}')[github.event.inputs.env] }}
+      PROVIDER_NAME: ${{ fromJson('{"dev": "app-bos-dv-wi-github-provider", "prod": "app-bos-pr-wi-github-provider", "e2e": "app-bos-e2e-wi-github-provider", "uat": "app-bos-uat-wi-github-provider"}')[github.event.inputs.env] }}
