@@ -22,16 +22,16 @@ on:
         type: string
 
 jobs:
-  restart-service:
+  pipeline:
     name: Restart service in ${{ github.event.inputs.env }} environment
     uses: brtspd/tool-jva-java-shared-pipeline/.github/workflows/cnative-restart-dev.yml@develop-bos-digital
     secrets: inherit
     with:
       DEPLOYMENT_NAME: ${{ github.event.inputs.deployment_name }}
       NAMESPACE: ${{ github.event.inputs.namespace }}
-      CLUSTER_LOCATION: "us-east4"  # Static value for all environments
-      CLUSTER_NAME: ${{ fromJson('{"dev": "ge4-bos-cn-dv", "prod": "ge4-bos-cn-pr", "e2e": "ge4-bos-cn-e2e", "uat": "ge4-bos-cn-uat"}')[github.event.inputs.env] }}
-      GCP_PROJECT: ${{ fromJson('{"dev": "app-bos-cn-dv-5gu9", "prod": "app-bos-cn-pr-7gu9", "e2e": "app-bos-cn-e2e-3gu9", "uat": "app-bos-cn-uat-4gu9"}')[github.event.inputs.env] }}
-      GCP_PROJECT_NUMBER: ${{ fromJson('{"dev": "644y5485895", "prod": "633x4374772", "e2e": "622z3263669", "uat": "611w2152556"}')[github.event.inputs.env] }}
-      POOL_NAME: ${{ fromJson('{"dev": "app-bos-dv-wi-pool-01", "prod": "app-bos-pr-wi-pool-01", "e2e": "app-bos-e2e-wi-pool-01", "uat": "app-bos-uat-wi-pool-01"}')[github.event.inputs.env] }}
-      PROVIDER_NAME: ${{ fromJson('{"dev": "app-bos-dv-wi-github-provider", "prod": "app-bos-pr-wi-github-provider", "e2e": "app-bos-e2e-wi-github-provider", "uat": "app-bos-uat-wi-github-provider"}')[github.event.inputs.env] }}
+      CLUSTER_NAME: ${{ github.event.inputs.env == 'dev' && 'ge4-bos-cn-dv' || github.event.inputs.env == 'prod' && 'ge4-bos-cn-pr' || github.event.inputs.env == 'e2e' && 'ge4-bos-cn-e2e' || 'ge4-bos-cn-uat' }}
+      CLUSTER_LOCATION: ${{ github.event.inputs.env == 'dev' && 'us-east4' || github.event.inputs.env == 'prod' && 'us-east1' || github.event.inputs.env == 'e2e' && 'us-east3' || 'us-east2' }}
+      GCP_PROJECT: ${{ github.event.inputs.env == 'dev' && 'app-bos-cn-dv-5gu9' || github.event.inputs.env == 'prod' && 'app-bos-cn-pr-7gu9' || github.event.inputs.env == 'e2e' && 'app-bos-cn-e2e-3gu9' || 'app-bos-cn-uat-4gu9' }}
+      GCP_PROJECT_NUMBER: ${{ github.event.inputs.env == 'dev' && '644y5485895' || github.event.inputs.env == 'prod' && '633x4374772' || github.event.inputs.env == 'e2e' && '622z3263669' || '611w2152556' }}
+      POOL_NAME: ${{ github.event.inputs.env == 'dev' && 'app-bos-dv-wi-pool-01' || github.event.inputs.env == 'prod' && 'app-bos-pr-wi-pool-01' || github.event.inputs.env == 'e2e' && 'app-bos-e2e-wi-pool-01' || 'app-bos-uat-wi-pool-01' }}
+      PROVIDER_NAME: ${{ github.event.inputs.env == 'dev' && 'app-bos-dv-wi-github-provider' || github.event.inputs.env == 'prod' && 'app-bos-pr-wi-github-provider' || github.event.inputs.env == 'e2e' && 'app-bos-e2e-wi-github-provider' || 'app-bos-uat-wi-github-provider' }}
