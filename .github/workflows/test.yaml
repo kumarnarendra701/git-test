@@ -8,7 +8,7 @@ on:
         type: string
 
 env: 
-  GCP_TOKEN: ${{ inputs.ENV == 'DEV' && vars.GCP_DEV_CLUSTER_TOKEN || inputs.ENV == 'QA' && vars.GCP_QA_CLUSTER_TOKEN }}
+  GCP_TOKEN: ${{ inputs.ENV == 'DEV' && vars.GCP_DEV_CLUSTER_TOKEN || inputs.ENV == 'QA' && vars.GCP_STAGE_CLUSTER_TOKEN }}
 
 jobs:
   restart-app:
