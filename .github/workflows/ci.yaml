@@ -1,29 +1,29 @@
 name: Restart Service
+
 on:
- workflow_dispatch:
-   inputs:
-     environment:
-       description: 'Select the environment (dev, qa, uat, e2e, prod)'
-       required: true
-       type: choice
-       options:
-         - dev
-         - qa
-         - uat
-         - e2e
-         - prod
-     namespace:
-       description: 'Enter the namespace'
-       required: true
-       type: string
-     deployment_name:
-       description: 'Enter the deployment name'
-       required: true
-       type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select the environment (dev, qa, uat, e2e, prod)'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - uat
+          - e2e
+          - prod
+
 jobs:
- pipeline:
-   name: Restart service in ${{ github.event.inputs.environment }} environment
-   uses: ../.github/workflows/test.yam@main
-   secrets: inherit
-   with:
-     CLUSTER_NAME: ${{ github.event.inputs.environment == 'dev' && 'DEV' || github.event.inputs.environment == 'prod' && 'PRD' || github.event.inputs.environment == 'e2e' && 'E22' || github.event.inputs.environment == 'uat' && 'UAT' || github.event.inputs.environment == 'qa' && 'QA' }}
+  pipeline:
+    name: Restart service in ${{ github.event.inputs.environment }} environment
+    uses: ./.github/workflows/test.yml@main
+    secrets: inherit
+    with:
+      CLUSTER_NAME: ${{ 
+        github.event.inputs.environment == 'dev' && 'DEV' ||
+        github.event.inputs.environment == 'prod' && 'PRD' ||
+        github.event.inputs.environment == 'e2e' && 'E22' ||
+        github.event.inputs.environment == 'uat' && 'UAT' ||
+        github.event.inputs.environment == 'qa' && 'QA'
+      }}
