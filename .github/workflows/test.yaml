@@ -12,7 +12,7 @@ env:
 
 jobs:
   restart-app:
-    runs-on: [self-hosted, cnative, dev-qa, common-runners]
+    runs-on: ubuntu-latest
     if: always()
     permissions:
       contents: 'read'
