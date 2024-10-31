@@ -19,8 +19,6 @@ jobs:
       id-token: 'write'
 
     steps:
-      - name: Checkout the repo
-        uses: actions/checkout@v4
 
       - name: Print GCP_TOKEN
         run: echo "GCP_TOKEN is $GCP_TOKEN"
