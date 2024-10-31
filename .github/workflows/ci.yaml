@@ -27,4 +27,4 @@ jobs:
    uses: ./.github/workflows/test.yaml
    secrets: inherit
    with:
-     CLUSTER_NAME: ${{ github.event.inputs.environment == 'dev' && 'DEV' || github.event.inputs.environment == 'prod' && 'PRD' || github.event.inputs.environment == 'e2e' && 'E22' || github.event.inputs.environment == 'uat' && 'UAT' || github.event.inputs.environment == 'qa' && '' }}
+     ENV: ${{ github.event.inputs.environment == 'dev' && 'DEV' || github.event.inputs.environment == 'prod' && 'PRD' || github.event.inputs.environment == 'e2e' && 'E22' || github.event.inputs.environment == 'uat' && 'UAT' || github.event.inputs.environment == 'qa' && '' }}
