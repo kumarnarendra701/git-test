@@ -1,0 +1,26 @@
+name: k8-deployment-restart
+
+on:        
+  workflow_call:
+    inputs:
+      ENV:
+        required: true
+        type: string
+
+env: 
+  GCP_TOKEN: ${{ inputs.ENV == 'DEV' && vars.GCP_DEV_CLUSTER_TOKEN || inputs.ENV == 'QA' && vars.GCP_QA_CLUSTER_TOKEN }}
+
+jobs:
+  restart-app:
+    runs-on: [self-hosted, cnative, dev-qa, common-runners]
+    if: always()
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Print GCP_TOKEN
+        run: echo "GCP_TOKEN is $GCP_TOKEN"
